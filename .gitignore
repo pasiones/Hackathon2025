@@ -5,3 +5,4 @@ Frontend/dist/
 Frontend/build/
 uploads/
 conversation_history.txt
+.env

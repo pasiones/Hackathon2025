@@ -366,9 +366,9 @@ class ValioCustomerServiceLLM:
 
     def __init__(self):
         self.llm = ChatOpenAI(
-            api_key=os.getenv("FEATHERLESS_API_KEY"),
-            base_url="https://api.featherless.ai/v1",
-            model="deepseek-ai/DeepSeek-R1-0528",
+            api_key=os.getenv("GROQ_API_KEY"),
+            base_url="https://api.groq.com/openai/v1",
+            model="openai/gpt-oss-120b",
             timeout=15,
         )
 
@@ -440,7 +440,8 @@ class ValioCustomerServiceLLM:
             all_products: list = None, 
             amount_missing: int = None,
             customer_message: str = None,
-            conversation_delete: bool = False
+            conversation_delete: bool = False,
+            order_id: str = None
         ):
 
         # Build compressed product list
@@ -456,12 +457,12 @@ class ValioCustomerServiceLLM:
                 for p in all_products
             ]
 
-        API_KEY = os.getenv("FEATHERLESS_API_KEY")
+        API_KEY = os.getenv("GROQ_API_KEY")
         if not API_KEY:
-            raise ValueError("Missing FEATHERLESS_API_KEY")
+            raise ValueError("Missing GROQ_API_KEY")
 
-        API_URL = "https://api.featherless.ai/v1/chat/completions"
-        MODEL = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+        API_URL = "https://api.groq.com/openai/v1/chat/completions"
+        MODEL = "llama-3.1-8b-instant"
 
         # ------------------------------------------------------
         # MODE 2 — Missing Item (special case)
@@ -555,6 +556,11 @@ class ValioCustomerServiceLLM:
         )
 
         data = response.json()
+
+        if "choices" not in data:
+            print(f"❌ Groq API error: {data}")
+            return {"error": "LLM API error", "detail": data.get("error", data)}
+
         content = data["choices"][0]["message"]["content"].strip()
 
         # Extract JSON with robust extractor

@@ -39,6 +39,11 @@ def send_message(request: ChatMessageRequest):
             customer_message=request.message,
             conversation_delete=request.conversation_delete
         )
+
+        # If LLM returned plain text instead of JSON, wrap it
+        if "error" in response and "raw" in response:
+            return {"Answers": response["raw"]}
+
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Chat service error: {str(e)}")

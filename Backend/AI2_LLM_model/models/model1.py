@@ -462,7 +462,7 @@ class ValioCustomerServiceLLM:
             raise ValueError("Missing GROQ_API_KEY")
 
         API_URL = "https://api.groq.com/openai/v1/chat/completions"
-        MODEL = "llama-3.1-8b-instant"
+        MODEL = "qwen/qwen3.8-27b"
 
         # ------------------------------------------------------
         # MODE 2 — Missing Item (special case)

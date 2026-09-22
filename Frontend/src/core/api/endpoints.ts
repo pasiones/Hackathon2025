@@ -1,19 +1,22 @@
 export const API_ENDPOINTS = {
-  // Bookings/Products
+  // Bookings / Products
   PRODUCTS: '/booking/products',
   PRODUCT_BY_ID: (id: string) => `/booking/products/${id}`,
 
   // Checkout
-  RELIABILITY_CHECK: '/reliability/check',
+  RELIABILITY_CHECK: '/checkout/predict',
   SUBSTITUTES: '/service/alternative',
-
-  // Orders
   ORDER: '/checkout/order',
   ORDERS: '/checkout/order',
+
+  // Orders / tracking
   BOOKING_ORDERS: '/booking/orders',
-  ORDER_BY_ID: (id: string) => `/orders/${id}`,
-  ORDER_TRACKING: (orderNumber: string) => `/orders/${orderNumber}/tracking`,
-  VALIDATE_ORDER: '/validate',
+  VALIDATE_ORDER: '/validate/',
+
+  // Service bot
+  SERVICE_ALTERNATIVE: '/service/alternative',
+  SERVICE_MISSING: '/service/missing',
+  SERVICE_TALK: '/service/talk',
 
   // Chat
   CHAT_MESSAGE: '/chat/message',

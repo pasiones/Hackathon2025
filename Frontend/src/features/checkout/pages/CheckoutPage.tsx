@@ -112,11 +112,9 @@ export function CheckoutPage() {
       const response = await orderService.createOrder(total, tracking);
 
       if (response.success) {
-        toast.success('Order placed successfully!');
-        // Clear the cart
         clearCart();
-        // Navigate to products page
-        navigate('/booking');
+        toast.success(response.message || 'Order placed successfully!');
+        navigate('/order');
       } else {
         toast.error(response.message || 'Failed to place order');
       }

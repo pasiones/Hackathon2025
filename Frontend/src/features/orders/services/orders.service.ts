@@ -8,7 +8,7 @@ class OrdersService {
   }
 
   async getOrderById(id: string): Promise<Order> {
-    return apiClient.get<Order>(API_ENDPOINTS.ORDER_BY_ID(id));
+    throw new Error(`Order detail lookup is not available from the backend API. Use /booking/orders only for now. Requested id: ${id}`);
   }
 
   async createOrder(orderData: Partial<Order>): Promise<Order> {
@@ -16,7 +16,7 @@ class OrdersService {
   }
 
   async trackOrder(orderNumber: string): Promise<any> {
-    return apiClient.get(API_ENDPOINTS.ORDER_TRACKING(orderNumber));
+    throw new Error(`Order tracking endpoint is not available from the backend API. Requested order: ${orderNumber}`);
   }
 
   async validateOrder(orderId: number, imageFile: File): Promise<any> {

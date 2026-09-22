@@ -111,6 +111,17 @@ export function ChatInterface() {
     }
   };
 
+  const renderProductOption = (option: number | { id?: number; name?: string; price?: number; score?: number }) => {
+    const productId = typeof option === 'number' ? option : option.id ?? 0;
+    const productName = typeof option === 'number' ? `Product #${productId}` : (option.name || `Product #${productId}`);
+
+    return {
+      id: productId,
+      label: productName,
+      price: typeof option === 'number' ? undefined : option.price,
+    };
+  };
+
   return (
     <Card className="flex flex-col h-full">
       <div className="p-4 border-b flex justify-between items-center">
@@ -163,18 +174,22 @@ export function ChatInterface() {
                     <div className="mt-2 pt-2 border-t border-border">
                       <p className="text-xs font-semibold mb-2">Product Recommendations:</p>
                       <div className="flex flex-wrap gap-2">
-                        {message.productOptions.map((productId) => (
-                          <Button
-                            key={productId}
-                            size="sm"
-                            variant="secondary"
-                            className="text-xs h-7"
-                            onClick={() => navigate(`/products/${productId}`)}
-                          >
-                            <ShoppingCart className="h-3 w-3 mr-1" />
-                            Product #{productId}
-                          </Button>
-                        ))}
+                        {message.productOptions.map((option) => {
+                          const productOption = renderProductOption(option);
+
+                          return (
+                            <Button
+                              key={productOption.id || productOption.label}
+                              size="sm"
+                              variant="secondary"
+                              className="text-xs h-7"
+                              onClick={() => navigate('/booking', { state: { focusProductId: productOption.id } })}
+                            >
+                              <ShoppingCart className="h-3 w-3 mr-1" />
+                              {productOption.label}
+                            </Button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

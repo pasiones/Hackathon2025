@@ -226,7 +226,9 @@ export function OrdersPage() {
                       {/* Upload Controls */}
                       <div className="flex items-center gap-2">
                         <input
-                          ref={(el) => (fileInputRefs.current[order.OrderID] = el)}
+                          ref={(el) => {
+                            fileInputRefs.current[order.OrderID] = el;
+                          }}
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleFileSelect(order.OrderID, e.target.files?.[0] || null)}

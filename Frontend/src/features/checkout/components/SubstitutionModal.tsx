@@ -102,7 +102,7 @@ export function SubstitutionModal({
           </div>
         ) : (
           <div className="space-y-4 mt-4">
-            {substitutes.map((substitute, index) => {
+            {substitutes.map((substitute) => {
               const allergensList = parseAllergens(substitute.Allergens);
 
               return (

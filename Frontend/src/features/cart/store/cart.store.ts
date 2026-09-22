@@ -11,7 +11,7 @@ interface CartStore {
   totalPrice: number;
 
   // Actions
-  addItem: (product: Product) => void;
+  addItem: (product: Product, quantity?: number) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
@@ -34,21 +34,19 @@ export const useCartStore = create<CartStore>()(
         totalItems: 0,
         totalPrice: 0,
 
-        addItem: (product) => {
+        addItem: (product, quantity = 1) => {
           set((state) => {
             const existingItem = state.items.find((item) => item.ProductID === product.ProductID);
 
             let newItems: CartItem[];
             if (existingItem) {
-              // Increment quantity if item already in cart
               newItems = state.items.map((item) =>
                 item.ProductID === product.ProductID
-                  ? { ...item, quantity: item.quantity + 1 }
+                  ? { ...item, quantity: item.quantity + quantity }
                   : item
               );
             } else {
-              // Add new item to cart
-              newItems = [...state.items, { ...product, quantity: 1 }];
+              newItems = [...state.items, { ...product, quantity }];
             }
 
             return {

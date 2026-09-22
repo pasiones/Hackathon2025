@@ -91,7 +91,7 @@ export function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate('/orders')}>
+          <Button variant="outline" onClick={() => navigate('/order')}>
             <Activity className="w-4 h-4 mr-2" />
             View All Orders
           </Button>
@@ -152,7 +152,7 @@ export function DashboardPage() {
                   Latest orders from your customers
                 </CardDescription>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => navigate('/orders')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate('/order')}>
                 View All
               </Button>
             </div>
@@ -163,7 +163,7 @@ export function DashboardPage() {
                 <div
                   key={order.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
-                  onClick={() => navigate('/orders')}
+                  onClick={() => navigate('/order')}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ export function DashboardPage() {
             <Button
               variant="outline"
               className="h-auto flex-col items-start p-4 gap-2"
-              onClick={() => navigate('/orders')}
+              onClick={() => navigate('/order')}
             >
               <ShoppingCart className="h-5 w-5" />
               <div className="text-left">

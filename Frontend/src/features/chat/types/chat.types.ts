@@ -1,9 +1,16 @@
+export type ChatProductOption = number | {
+  id?: number;
+  name?: string;
+  price?: number;
+  score?: number;
+};
+
 export interface Message {
   id: string;
   text: string;
   sender: 'user' | 'assistant';
   timestamp: Date;
-  productOptions?: number[];
+  productOptions?: ChatProductOption[];
 }
 
 export interface ChatMessageRequest {
@@ -13,7 +20,7 @@ export interface ChatMessageRequest {
 
 export interface ChatMessageResponse {
   Answers: string;
-  Options?: number[];
+  Options?: ChatProductOption[];
 }
 
 export interface ChatError {

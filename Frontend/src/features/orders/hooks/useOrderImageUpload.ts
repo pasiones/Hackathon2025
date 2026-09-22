@@ -143,20 +143,20 @@ export function useOrderImageUpload(): UseOrderImageUploadReturn {
           },
         }));
 
-        // Get the first product from the order to use for apology
+        // Get the first product from the order to use for apology when a valid product ID is available.
         const firstProduct = response.products_in_order?.[0];
         let apologyResponse = null;
 
-        if (firstProduct) {
-          // Extract product ID from tracking data or use a default
-          const productId = 1; // You may need to adjust this based on actual data structure
-          const amountMissing = firstProduct.quantity || 1;
+        const productIdFromResponse =
+          typeof firstProduct === 'object' && firstProduct && 'product_id' in firstProduct
+            ? Number(firstProduct.product_id)
+            : undefined;
 
-          // Trigger apology message in chat and get the response
-          apologyResponse = await chatService.triggerOrderApology(productId, amountMissing);
+        if (productIdFromResponse && Number.isFinite(productIdFromResponse)) {
+          const amountMissing = firstProduct?.quantity || 1;
+          apologyResponse = await chatService.triggerOrderApology(productIdFromResponse, amountMissing);
         }
 
-        // Show toast based on error type
         const errorMessage = response.error_type === 'ai_counting_failed'
           ? 'AI counting failed'
           : 'Order validation failed';
@@ -169,12 +169,14 @@ export function useOrderImageUpload(): UseOrderImageUploadReturn {
           },
         });
 
-        // Navigate to chat with the apology message
         setTimeout(() => {
           navigate('/chat', {
             state: {
-              apologyMessage: apologyResponse
-            }
+              apologyMessage: apologyResponse ?? {
+                Answers: 'I apologize for the inconvenience with your order. We identified a mismatch in the delivery and are ready to help resolve it.',
+                Options: null,
+              },
+            },
           });
         }, 2000);
       }

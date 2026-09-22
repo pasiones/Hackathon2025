@@ -1,9 +1,7 @@
 import { Card, CardContent, CardFooter } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
-import { Badge } from '@/shared/components/ui/badge';
-import { ShoppingCart, Package, AlertCircle } from 'lucide-react';
 import type { Product } from '../types';
-import { parseAllergens, formatAllergen } from '../utils/allergens';
+import { parseAllergens } from '../utils/allergens';
 
 interface ProductCardProps {
   product: Product;

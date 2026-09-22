@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ProductList } from '../components';
 import { useProducts } from '../hooks';
 import { useCart } from '@/features/cart';
@@ -7,15 +7,24 @@ import { useBookingsStore } from '../store';
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { Input } from '@/shared/components/ui/input';
-import { ShoppingCart, Search, Package2 } from 'lucide-react';
+import { ShoppingCart, Search } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function BookingsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { products, isLoading, error } = useProducts();
   const { addItem, totalItems, totalPrice } = useCart();
   const { setFilters } = useBookingsStore();
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const focusProductId = location.state?.focusProductId;
+    if (focusProductId) {
+      setSearchQuery(String(focusProductId));
+      setFilters({ search: String(focusProductId) });
+    }
+  }, [location.state, setFilters]);
 
   const handleAddToCart = (product: any) => {
     addItem(product);

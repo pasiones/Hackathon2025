@@ -50,8 +50,8 @@ export const useBookingsStore = create<BookingsState>()(
           const searchLower = filters.search.toLowerCase();
           filtered = filtered.filter((product) =>
             product.Product_name.toLowerCase().includes(searchLower) ||
-            product.ProductID.toLowerCase().includes(searchLower) ||
-            product.ProducerID.toLowerCase().includes(searchLower)
+            String(product.ProductID).toLowerCase().includes(searchLower) ||
+            String(product.ProducerID).toLowerCase().includes(searchLower)
           );
         }
 

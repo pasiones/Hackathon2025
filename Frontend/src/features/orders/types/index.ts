@@ -1,1 +1,1 @@
-export type { Order, OrderItem, OrdersState } from './order.types';
+export type { Order, OrdersResponse, OrdersState } from './order.types';

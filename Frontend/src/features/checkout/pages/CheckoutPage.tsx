@@ -12,7 +12,7 @@ import { SubstitutionModal } from '../components/SubstitutionModal';
 import { mlReliabilityService, warningBuilderService, orderService } from '../services';
 import type { TrackingItem } from '../services';
 import { toast } from 'sonner';
-import { parseAllergens, formatAllergen } from '@/features/bookings/utils/allergens';
+import { parseAllergens } from '@/features/bookings/utils/allergens';
 import type { Product } from '@/features/bookings/types';
 
 export function CheckoutPage() {
@@ -32,10 +32,9 @@ export function CheckoutPage() {
 
   const handleSelectSubstitute = (substitute: Product) => {
     if (selectedProductForSubstitution) {
-      // Remove the original product
+      const originalItem = items.find((i) => i.ProductID === selectedProductForSubstitution.ProductID);
       removeItem(selectedProductForSubstitution.ProductID);
-      // Add the substitute with the same quantity
-      const originalItem = items.find(i => i.ProductID === selectedProductForSubstitution.ProductID);
+
       if (originalItem) {
         addItem(substitute, originalItem.quantity);
         toast.success(`Replaced with ${substitute.Product_name}`);

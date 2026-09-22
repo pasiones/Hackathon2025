@@ -2,7 +2,7 @@ import type { MLPrediction, ProductWarning, WarningSeverity } from '../types';
 
 // Thresholds for determining severity based on ML score
 const CRITICAL_THRESHOLD = 0.4; // score < 0.4 = critical
-const WARNING_THRESHOLD = 0.7;  // score < 0.7 = warning
+const WARNING_THRESHOLD = 0.9;  // score < 0.7 = warning
 // score >= 0.7 = info/good (no warning needed)
 
 class WarningBuilderService {

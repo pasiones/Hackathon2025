@@ -14,22 +14,23 @@ class ProductIdsRequest(BaseModel):
 
 @router.post("/predict")
 async def fetch_prediction_scores(request: ProductIdsRequest):
+    if not request.product_ids:
+        return {"predictions": []}
+
     conn = get_connection()
     if conn is None:
         return {"error": "Cannot connect to database"}
 
     cursor = conn.cursor(dictionary=True)
 
-    ids_tuple = tuple(request.product_ids)
-    if len(ids_tuple) == 1:
-        ids_tuple = (ids_tuple[0],)
+    placeholders = ", ".join(["%s"] * len(request.product_ids))
 
     query = f"""
         SELECT ProductID, Product_name, Prediction_score
         FROM Product
-        WHERE ProductID IN {ids_tuple}
+        WHERE ProductID IN ({placeholders})
     """
-    cursor.execute(query)
+    cursor.execute(query, request.product_ids)
     results = cursor.fetchall()
 
     cursor.close()

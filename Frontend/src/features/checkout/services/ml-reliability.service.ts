@@ -3,6 +3,15 @@ import type { MLPredictionRequest, MLPredictionResponse } from '../types';
 
 const USE_MOCK_DATA = false;
 
+interface DatabasePrediction {
+  ProductID: number;
+  Prediction_score: number;
+}
+
+interface DatabasePredictionResponse {
+  predictions: DatabasePrediction[];
+}
+
 class MLReliabilityService {
   async predictReliability(productIds: number[]): Promise<MLPredictionResponse> {
     if (USE_MOCK_DATA) {
@@ -21,7 +30,16 @@ class MLReliabilityService {
     };
 
     try {
-      return await apiClient.post<MLPredictionResponse>('/checkout/predict', requestBody);
+      const response = await apiClient.post<
+        DatabasePredictionResponse | MLPredictionResponse
+      >('/checkout/predict', requestBody);
+
+      return {
+        predictions: response.predictions.map((prediction) => ({
+          product_id: 'ProductID' in prediction ? prediction.ProductID : prediction.product_id,
+          score: 'Prediction_score' in prediction ? prediction.Prediction_score : prediction.score,
+        })),
+      };
     } catch (error) {
       console.warn('Falling back to demo reliability data because the backend route is unavailable.', error);
 

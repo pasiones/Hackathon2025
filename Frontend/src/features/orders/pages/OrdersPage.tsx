@@ -1,4 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import { useOrders, useOrderImageUpload } from '../hooks';
+import { bookingsService } from '@/features/bookings/services';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
@@ -58,6 +60,12 @@ const statusConfig: Record<string, {
 export function OrdersPage() {
   const { data: orders, isLoading, error } = useOrders();
   const { orderImages, fileInputRefs, handleFileSelect, handleSendImage, clearImage } = useOrderImageUpload();
+  const { data: products = [] } = useQuery({
+    queryKey: ['products'],
+    queryFn: () => bookingsService.getAllProducts(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const productNames = new Map(products.map((product) => [product.ProductID, product.Product_name]));
 
   if (isLoading) {
     return (
@@ -176,7 +184,9 @@ export function OrdersPage() {
                           >
                             <div className="flex items-center gap-2">
                               <span className="text-muted-foreground">{item.ordered_quantity}x</span>
-                              <span>Product #{item.product_id}</span>
+                              <span>
+                                {productNames.get(Number(item.product_id)) || `Product #${item.product_id}`}
+                              </span>
                             </div>
                             {item.real_quantity !== item.ordered_quantity && (
                               <Badge variant="secondary" className="text-xs">

@@ -8,10 +8,11 @@ The app is designed around a grocery/retail workflow:
 
 - Browse products and stock information from the catalog
 - Review product reliability predictions during checkout
-- Create orders and track delivery status
+- Create orders and view order history
 - Receive AI-generated substitute recommendations when stock or quality issues are detected
 - Use a chat interface for customer service assistance and order-related apologies
 - Validate order images using the AI validation flow
+- Preserve chat messages while navigating between screens
 
 ## Tech stack
 
@@ -59,7 +60,7 @@ The frontend is mounted under [Frontend](Frontend) and uses route-based screens 
 - Dashboard
 - Bookings / product browsing
 - Checkout / reliability warnings
-- Orders / tracking
+- Orders / validation
 - Chat assistant
 
 The router is defined in [Frontend/src/core/router/routes.tsx](Frontend/src/core/router/routes.tsx).
@@ -76,7 +77,7 @@ The FastAPI app is initialized in [Backend/app/main.py](Backend/app/main.py) and
 
 ### Database
 
-The MySQL database is seeded via [Database/first_run.sql](Database/first_run.sql). It contains the `Product`, `Order`, and related tables used by the backend and checkout flows.
+The MySQL database is initialized and seeded via [Database/first_run.sql](Database/first_run.sql). It creates the `Producer`, `Product`, and `Order` tables and inserts the catalog used by the application. The CSV and JSON files in `Database/` are reference/sample data and are not loaded by the running Docker stack.
 
 ## Environment configuration
 
@@ -136,16 +137,16 @@ npm run dev
 
 The backend exposes several key endpoints used by the UI:
 
-### Booking
+### Booking and products
 
 - `GET /booking/products` — fetch all available products
 - `GET /booking/orders` — fetch orders and tracking data
-- `POST /booking/order` — create an order
+- `POST /booking/order` — legacy/simple booking order endpoint
 
 ### Checkout
 
 - `POST /checkout/predict` — get product reliability prediction scores
-- `POST /checkout/order` — store an order record
+- `POST /checkout/order` — store an order record with total and tracking data
 
 ### Service bot
 
@@ -163,12 +164,17 @@ The backend exposes several key endpoints used by the UI:
 
 - `POST /validate/` — validate an uploaded order image against expected quantities/products
 
+The frontend uses `/checkout/order` for checkout submissions and `/booking/orders` to display order history. The backend does not currently expose separate order-detail or tracking endpoints.
+
 ## Important notes
 
 - The app relies on the MySQL container initialized by Docker Compose.
 - The backend uses `app.database.get_connection()` to connect to the `valioaimo` database.
 - The frontend and backend are configured for local development under the default ports shown above.
 - Groq credentials are required for the AI and customer service features to function.
+- Checkout reliability scores are read from `Product.Prediction_score`. Informational results are shown on product cards but are excluded from warning banners, badges, and concern toasts.
+- Selecting a product alternative replaces the cart item and reruns the reliability check for the updated cart.
+- Order item names are resolved from the product catalog when the order history is displayed.
 
 ## Useful links
 
@@ -179,4 +185,4 @@ The backend exposes several key endpoints used by the UI:
 
 ## Development status
 
-This project is a hackathon-style prototype combining product management, predictive warnings, chat-driven support, and order validation. It is suitable for local development and demo use with Docker Compose.
+This project is a hackathon-style prototype combining product browsing, predictive reliability warnings, chat-driven support, and order image validation. It is suitable for local development and demo use with Docker Compose. The dashboard remains prototype/mock-backed, and the application does not include authentication or payment processing.

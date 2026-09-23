@@ -7,18 +7,41 @@ import { Card } from '@/shared/components/ui/card';
 import { chatService } from '../services/chat.service';
 import type { Message } from '../types/chat.types';
 
+const CHAT_MESSAGES_STORAGE_KEY = 'chat-messages';
+
+const createWelcomeMessage = (): Message => ({
+  id: '1',
+  text: 'Hello! How can I help you today?',
+  sender: 'assistant',
+  timestamp: new Date(),
+});
+
+const loadStoredMessages = (): Message[] => {
+  if (typeof window === 'undefined') {
+    return [createWelcomeMessage()];
+  }
+
+  try {
+    const storedMessages = window.localStorage.getItem(CHAT_MESSAGES_STORAGE_KEY);
+    if (!storedMessages) {
+      return [createWelcomeMessage()];
+    }
+
+    const parsedMessages = JSON.parse(storedMessages) as Array<Omit<Message, 'timestamp'> & { timestamp: string }>;
+    return parsedMessages.map((message) => ({
+      ...message,
+      timestamp: new Date(message.timestamp),
+    }));
+  } catch {
+    return [createWelcomeMessage()];
+  }
+};
+
 export function ChatInterface() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Hello! How can I help you today?',
-      sender: 'assistant',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>(loadStoredMessages);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +53,10 @@ export function ChatInterface() {
 
   useEffect(() => {
     scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    window.localStorage.setItem(CHAT_MESSAGES_STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
 
   // Handle apology message from navigation state
@@ -89,14 +116,7 @@ export function ChatInterface() {
   const handleClearConversation = async () => {
     try {
       await chatService.clearConversation();
-      setMessages([
-        {
-          id: '1',
-          text: 'Hello! How can I help you today?',
-          sender: 'assistant',
-          timestamp: new Date(),
-        },
-      ]);
+      setMessages([createWelcomeMessage()]);
       setError(null);
     } catch (err) {
       setError('Failed to clear conversation. Please try again.');

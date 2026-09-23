@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/features/cart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -23,7 +23,7 @@ export function CheckoutPage() {
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [substitutionModalOpen, setSubstitutionModalOpen] = useState(false);
   const [selectedProductForSubstitution, setSelectedProductForSubstitution] = useState<Product | null>(null);
-  const hasAnalyzed = useRef(false);
+  const productIdsKey = items.map((item) => item.ProductID).join(',');
 
   const handleOpenSubstitutionModal = (product: Product) => {
     setSelectedProductForSubstitution(product);
@@ -44,11 +44,11 @@ export function CheckoutPage() {
 
   useEffect(() => {
     const runReliabilityCheck = async () => {
-      // Prevent duplicate runs in Strict Mode
-      if (hasAnalyzed.current) return;
-      hasAnalyzed.current = true;
+      const productIds = productIdsKey
+        ? productIdsKey.split(',').map(Number)
+        : [];
 
-      if (items.length === 0) {
+      if (productIds.length === 0) {
         setIsAnalyzing(false);
         setAnalysisComplete(true);
         return;
@@ -56,9 +56,6 @@ export function CheckoutPage() {
 
       try {
         setIsAnalyzing(true);
-
-        // Extract product IDs
-        const productIds = items.map((item) => item.ProductID);
 
         // Call ML service
         const response = await mlReliabilityService.predictReliability(productIds);
@@ -77,8 +74,12 @@ export function CheckoutPage() {
 
         setAnalysisComplete(true);
 
-        if (warnings.length > 0) {
-          toast.warning(`Found ${warnings.length} product reliability concern${warnings.length > 1 ? 's' : ''}`);
+        const concernCount = productIds.filter((productId) => {
+          const warning = warningsMap.get(productId);
+          return warning?.severity === 'critical' || warning?.severity === 'warning';
+        }).length;
+        if (concernCount > 0) {
+          toast.warning(`Found ${concernCount} product reliability concern${concernCount > 1 ? 's' : ''}`);
         } else {
           toast.success('All products passed reliability check');
         }
@@ -91,7 +92,7 @@ export function CheckoutPage() {
     };
 
     runReliabilityCheck();
-  }, []); // Only run on mount
+  }, [productIdsKey, updateWarnings]);
 
   const handleOrderSubmit = async () => {
     try {

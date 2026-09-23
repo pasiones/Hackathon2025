@@ -2,17 +2,11 @@ import type { MLPrediction, ProductWarning, WarningSeverity } from '../types';
 
 // Thresholds for determining severity based on ML score
 const CRITICAL_THRESHOLD = 0.4; // score < 0.4 = critical
-const WARNING_THRESHOLD = 0.9;  // score < 0.7 = warning
-// score >= 0.7 = info/good (no warning needed)
+const WARNING_THRESHOLD = 0.9;  // score < 0.9 = warning
 
 class WarningBuilderService {
   buildWarningFromPrediction(prediction: MLPrediction): ProductWarning | null {
     const { product_id, score } = prediction;
-
-    // Don't create warning if score is good
-    if (score >= WARNING_THRESHOLD) {
-      return null;
-    }
 
     const severity = this.determineSeverity(score);
     const { message, details } = this.generateWarningMessage(score, severity);

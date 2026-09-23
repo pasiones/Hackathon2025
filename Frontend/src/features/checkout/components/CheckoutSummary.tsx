@@ -13,7 +13,9 @@ export function CheckoutSummary({ items }: CheckoutSummaryProps) {
   const shipping = subtotal > 50 ? 0 : 5.99;
   const total = subtotal + tax + shipping;
 
-  const warningCount = items.filter((item) => item.warning).length;
+  const warningCount = items.filter(
+    (item) => item.warning?.severity === 'critical' || item.warning?.severity === 'warning'
+  ).length;
 
   return (
     <Card>

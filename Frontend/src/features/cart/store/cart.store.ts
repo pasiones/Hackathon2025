@@ -106,7 +106,9 @@ export const useCartStore = create<CartStore>()(
         },
 
         getWarningCount: () => {
-          return get().items.filter((item) => item.warning !== null && item.warning !== undefined).length;
+          return get().items.filter(
+            (item) => item.warning?.severity === 'critical' || item.warning?.severity === 'warning'
+          ).length;
         },
       }),
       {
